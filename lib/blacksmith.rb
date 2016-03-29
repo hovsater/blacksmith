@@ -1,5 +1,5 @@
-require "blacksmith/version"
+require 'blacksmith/version'
+require 'blacksmith/forge'
 
 module Blacksmith
-  # Your code goes here...
 end
