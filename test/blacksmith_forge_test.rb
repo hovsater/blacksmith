@@ -1,12 +1,14 @@
 require 'test_helper'
 
 class User
-  attr_accessor :name, :admin
+  attr_accessor :name, :admin, :email_address
 end
 
 class UserForge < Blacksmith::Forge
   def user
-    make(name: 'John Doe', admin: false)
+    make(name: 'John Doe', admin: false) do |user|
+      user.email_address = "#{user.name.split.join('.')}@example.com"
+    end
   end
   alias_method :member, :user
 
@@ -51,5 +53,12 @@ class BlacksmithForgeTest < Minitest::Test
     user = forge.make(name: 'John Doe')
 
     assert_equal 'John Doe', user.name
+  end
+
+  def test_make_with_dependent_attributes
+    forge = UserForge.new(User)
+    user = forge.make(:user, name: 'John Doe')
+
+    assert_equal 'John.Doe@example.com', user.email_address
   end
 end

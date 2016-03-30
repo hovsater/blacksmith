@@ -8,11 +8,11 @@ module Blacksmith
       @object_class = object_class
     end
 
-    def make(factory = {}, attributes = {})
+    def make(factory = {}, attributes = {}, &block)
       if factory.respond_to?(:each)
-        make_from_factory(:default, factory)
+        make_from_factory(DEFAULT_FACTORY, factory, &block)
       else
-        make_from_factory(factory, attributes)
+        make_from_factory(factory, attributes, &block)
       end
     end
 
@@ -22,11 +22,17 @@ module Blacksmith
 
     private
 
-    def make_from_factory(factory, attributes)
-      public_send(:"#{factory}").tap do |object|
+    def factory(name)
+      public_send(:"#{name}")
+    end
+
+    def make_from_factory(name, attributes, &block)
+      factory(name).tap do |object|
         attributes.each do |attribute, value|
           object.public_send(:"#{attribute}=", value)
         end
+
+        block.call(object) if block_given?
       end
     end
   end
