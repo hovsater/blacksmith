@@ -61,4 +61,26 @@ class BlacksmithForgeTest < Minitest::Test
 
     assert_equal 'John.Doe@example.com', user.email_address
   end
+
+  def test_make_with_invalid_factory
+    forge = UserForge.new(User)
+    exception = assert_raises RuntimeError do
+      forge.make(:unknown)
+    end
+
+    assert_equal 'Can not find factory "unknown". Make sure UserForge have ' \
+                 'a defined public method for it.',
+                 exception.message
+  end
+
+  def test_make_with_invalid_attribute
+    forge = UserForge.new(User)
+    exception = assert_raises RuntimeError do
+      forge.make(:user, unknown: true)
+    end
+
+    assert_equal 'Can not set "unknown" of User. Make sure User have a ' \
+                 'defined setter method for it.',
+                 exception.message
+  end
 end
