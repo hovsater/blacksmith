@@ -16,6 +16,14 @@ module Blacksmith
       end
     end
 
+    def forge(name, object_class)
+      forge_name = camelize(:"#{name}_forge")
+      Object.const_get(forge_name).new(object_class)
+    rescue NameError
+      fail "Can not find forge \"#{forge_name}\". Make sure #{forge_name} " \
+           "exists."
+    end
+
     def default
       object_class.new
     end
@@ -25,6 +33,10 @@ module Blacksmith
     def factory(name)
       fail_with_invalid_factory(name) unless respond_to?(name)
       public_send(:"#{name}")
+    end
+
+    def camelize(name)
+      name.to_s.split('_').map { |s| "#{s[0].upcase + s[1..-1]}" }.join
     end
 
     def make_from_factory(name, attributes, &block)

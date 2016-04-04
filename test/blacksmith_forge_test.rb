@@ -4,6 +4,10 @@ class User
   attr_accessor :name, :admin, :email_address
 end
 
+class Post
+  attr_accessor :title, :body, :author
+end
+
 class UserForge < Blacksmith::Forge
   def user
     make(name: 'John Doe', admin: false) do |user|
@@ -14,6 +18,14 @@ class UserForge < Blacksmith::Forge
 
   def admin
     make(:user, admin: true)
+  end
+end
+
+class PostForge < Blacksmith::Forge
+  def post
+    make(title: 'A post',
+         body: 'Interesting post.',
+         author: forge(:user, User).make(:user))
   end
 end
 
@@ -81,6 +93,24 @@ class BlacksmithForgeTest < Minitest::Test
 
     assert_equal 'Can not set "unknown" of User. Make sure User have a ' \
                  'defined setter method for it.',
+                 exception.message
+  end
+
+  def test_make_with_forge_reference
+    forge = PostForge.new(Post)
+    post = forge.make(:post)
+
+    assert_instance_of User, post.author
+  end
+
+  def test_make_with_invalid_forge_reference
+    forge = PostForge.new(Post)
+    exception = assert_raises RuntimeError do
+      forge.forge(:unknown, User)
+    end
+
+    assert_equal 'Can not find forge "UnknownForge". Make sure UnknownForge ' \
+                 'exists.',
                  exception.message
   end
 end
