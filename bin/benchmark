@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+
+require 'benchmark'
+require 'blacksmith'
+
+Dir[File.expand_path("../../test/fixtures/*.rb", __FILE__)].each { |f| require f }
+Dir[File.expand_path("../../test/forges/*_forge.rb", __FILE__)].each { |f| require f }
+
+n = 1_000_000
+Benchmark.bm() do |x|
+  x.report("Vanilla") do
+    n.times do
+      user = User.new
+      user.name = "John"
+      user.role = :customer
+      user.email_address = "#{user.name}@example.com"
+      user
+    end
+  end
+
+  x.report("Blacksmith") do
+    n.times { UserForge.new(User).user.make }
+  end
+end
