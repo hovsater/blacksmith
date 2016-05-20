@@ -1,21 +1,11 @@
-class UserForge
-  include Blacksmith::Tooling
+require "blacksmith"
 
-  def initialize(klass)
-    @klass = klass
-  end
-
+class UserForge < Blacksmith::Forge
   def user
-    forgeable do |user|
-      user.name = "John"
+    instance.tap do |user|
+      user.name = 'John'
       user.role = :customer
-      user.email_address = "#{user.name}@example.com"
-    end
-  end
-
-  def admin
-    forgeable(user) do |user|
-      user.role = :administrator
+      user.email_address = 'john@example.com'
     end
   end
 end

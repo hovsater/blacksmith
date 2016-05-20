@@ -1,11 +1,9 @@
 module Blacksmith
   module Tooling
-    private
-
-    def forgeable(forgeable = nil, &block)
-      new_forgeable = Forgeable.new(@klass, block)
-      new_forgeable.prepend(forgeable) if forgeable
-      new_forgeable
+    def make(object, attributes)
+      attributes.each_with_object(object) do |(attribute, value), object|
+        object.public_send(:"#{attribute}=", value)
+      end
     end
   end
 end
