@@ -8,7 +8,7 @@ module Blacksmith
 
     private
 
-    def instance
+    def object
       klass.new
     end
   end
