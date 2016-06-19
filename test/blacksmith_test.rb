@@ -35,6 +35,14 @@ class BlacksmithTest < Minitest::Test
     assert_user users[1], "Jane", :customer, "john@example.com"
   end
 
+  def test_make_user_via_implicitly_accessed_forge
+    Blacksmith.configure do |config|
+      config.forge :user, entity: User
+    end
+
+    user = forge(:user).user
+    assert_user user, "John", :customer, "john@example.com"
+  end
 
   def assert_user(user, name, role, email_address)
     assert_equal name, user.name
