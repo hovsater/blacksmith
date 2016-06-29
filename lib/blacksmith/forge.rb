@@ -1,7 +1,5 @@
 module Blacksmith
   class Forge
-    attr_accessor :klass
-
     def initialize(klass)
       @klass = klass
     end
@@ -9,7 +7,7 @@ module Blacksmith
     private
 
     def object
-      klass.new
+      @klass.new
     end
   end
 end
