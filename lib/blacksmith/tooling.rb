@@ -1,9 +1,9 @@
+require_relative "tools/make"
+
 module Blacksmith
   module Tooling
     def make(object, attributes)
-      attributes.each_with_object(object) do |(attribute, value), obj|
-        obj.public_send(:"#{attribute}=", value)
-      end
+      Tools::Make.new.perform(object, attributes)
     end
 
     def make_list(object, size, attributes = {})
