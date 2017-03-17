@@ -1,11 +1,17 @@
-require "blacksmith"
+class UserForge
+  attr_reader :creator
 
-class UserForge < Blacksmith::Forge
+  private :creator
+
+  def initialize(creator = User)
+    @creator = creator
+  end
+
   def user
-    object.tap do |user|
-      user.name = 'John'
+    creator.new.tap do |user|
+      user.name = "John"
       user.role = :customer
-      user.email_address = 'john@example.com'
+      user.email_address = "john@example.com"
     end
   end
 end
