@@ -1,8 +1,9 @@
 module Blacksmith
   module Tools
     class Forge
-      def perform(name)
-        canonicalize_constant(name).new
+      def perform(name, creator)
+        forge = canonicalize_constant(name)
+        creator ? forge.new(creator) : forge.new
       end
 
       private

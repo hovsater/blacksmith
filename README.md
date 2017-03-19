@@ -1,5 +1,7 @@
 # Blacksmith
 
+Blacksmith is a fixtures replacement that allows you to easily and programmatically forge test objects. An alternative to [factory_girl](https://github.com/thoughtbot/factory_girl).
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -17,6 +19,73 @@ Or install it yourself as:
     $ gem install blacksmith
 
 ## Usage
+
+Blacksmith provides you with the concept of forges. A forge is basically a Ruby
+class with factory definitions in it.
+
+```ruby
+class UserForge < Blacksmith::Forge
+  def default
+    forgeable do |user|
+      user.first_name = "John"
+      user.last_name = "Doe"
+      user.email_address = "john.doe@example.com"
+    end
+  end
+end
+```
+
+Let's use this in a test!
+
+```ruby
+class UserTest < Minitest::Test
+  include Blacksmith::Tooling
+
+  def test_full_name
+    forge = UserForge.new(User)
+    user = make forge.default
+    assert_equal "John Doe", user.full_name
+  end
+end
+```
+
+This might seem like a lot of boilerplate just to get a test passing. Fortunately, this can be rewritten like so:
+
+Let's add a default creator to our `UserForge`.
+
+```ruby
+class UserForge < Blacksmith::Forge
+  def initialize(creator = User)
+    super(creator)
+  end
+
+  def default
+    forgeable do |user|
+      user.first_name = "John"
+      user.last_name = "Doe"
+      user.email_address = "john.doe@example.com"
+    end
+  end
+end
+```
+
+Now let's rewrite the test.
+
+```ruby
+class UserTest < Minitest::Test
+  include Blacksmith::Tooling
+
+  def test_full_name
+    user = make forge(:user)
+    assert_equal "John Doe", user.full_name
+  end
+end
+```
+
+There are a number of things going on. `forge` allow us to implicitly reference
+our `UserForge`. Since we added a default creator to our `UserForge` we don't
+have to provide one. By default, `forge` will call the `default` factory if we
+don't provide another one.
 
 ## Development
 
